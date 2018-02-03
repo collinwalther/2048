@@ -1,10 +1,12 @@
 #!/Library/Frameworks/Python.framework/Versions/3.6/bin/python3
 import numpy as np
-import tty, termios, sys, random, curses, enum
+import random
+import curses
 from copy import deepcopy
 
+
 class Board:
-    def __init__(self, squareSize = 10):
+    def __init__(self, squareSize=10):
         self.tiles = [[None, None, None, None] for _ in range(4)]
         self.squareSize = squareSize
         self.ratioWH = .4
@@ -13,17 +15,17 @@ class Board:
     def print(self):
         print("{}".format("-" * (4 * self.squareSize + 1)))
         for row in self.tiles:
-           for _ in range(int((self.squareSize // 2) * self.ratioWH)):
+            for _ in range(int((self.squareSize // 2) * self.ratioWH)):
                 print("|{}".format("{}|".format(" " * (self.squareSize - 1)) * 4))
-           for tile in row:
+            for tile in row:
                 if tile is None:
                     print("|{}".format(" " * (self.squareSize - 1)), end="")
                 else:
                     print(("|{:^" + str(self.squareSize - 1) + "d}").format(tile), end="")
-           print("|")
-           for _ in range(int((self.squareSize // 2) * self.ratioWH)):
+            print("|")
+            for _ in range(int((self.squareSize // 2) * self.ratioWH)):
                 print("|{}".format("{}|".format(" " * (self.squareSize - 1)) * 4))
-           print("{}".format("-" * (4 * self.squareSize + 1)))
+            print("{}".format("-" * (4 * self.squareSize + 1)))
 
     def step(self):
         if self.isFilled():
@@ -67,28 +69,27 @@ class Board:
             elif direction == curses.KEY_RIGHT:
                 isValidMove = self.moveRight()
             elif direction == 113:
-               return 
-            if isValidMove == True:
+                return
+            if isValidMove:
                 self.step()
                 if __name__ == "__main__":
                     printBoard(self)
 
     def isLost(self):
         temp = deepcopy(self.tiles)
-        if self.moveLeft() == True:
+        if self.moveLeft():
             self.tiles = temp
             return False
-        elif self.moveUp() == True:
+        elif self.moveUp():
             self.tiles = temp
             return False
-        elif self.moveDown() == True:
+        elif self.moveDown():
             self.tiles = temp
             return False
-        elif self.moveRight() == True:
+        elif self.moveRight():
             self.tiles = temp
             return False
         return True
-        
 
     def moveLeft(self):
         modified = False
@@ -97,21 +98,21 @@ class Board:
         return modified
 
     def moveUp(self):
-        self.tiles = np.rot90(self.tiles, k = 1)
+        self.tiles = np.rot90(self.tiles, k=1)
         modified = self.moveLeft()
-        self.tiles = np.rot90(self.tiles, k = 3)
+        self.tiles = np.rot90(self.tiles, k=3)
         return modified
 
     def moveRight(self):
-        self.tiles = np.rot90(self.tiles, k = 2)
+        self.tiles = np.rot90(self.tiles, k=2)
         modified = self.moveLeft()
-        self.tiles = np.rot90(self.tiles, k = 2)
+        self.tiles = np.rot90(self.tiles, k=2)
         return modified
-       
+
     def moveDown(self):
-        self.tiles = np.rot90(self.tiles, k = 3)
+        self.tiles = np.rot90(self.tiles, k=3)
         modified = self.moveLeft()
-        self.tiles = np.rot90(self.tiles, k = 1)
+        self.tiles = np.rot90(self.tiles, k=1)
         return modified
 
     def collapse(self, row):
@@ -143,12 +144,16 @@ class Board:
                 row[-1] = None
         return modified
 
+
 ratioWH = .5
+mainScreen = None
+cells = []
+scoreBox = None
+
 
 def getchar():
     return mainScreen.getch()
 
-mainScreen = None
 
 def main(stdscr):
     global mainScreen
@@ -161,8 +166,6 @@ def main(stdscr):
     while getchar() != 113:
         pass
 
-cells = []
-scoreBox = None
 
 def printBoard(b):
     for i in range(4):
@@ -181,6 +184,7 @@ def printBoard(b):
     scoreBox.noutrefresh()
     curses.doupdate()
 
+
 colorsDict = {
     2 ** 13: 13,
     2 ** 12: 12,
@@ -197,6 +201,7 @@ colorsDict = {
     2 ** 1: 1
 }
 
+
 def initColors():
     # Define new color constants
     lightRed = 8
@@ -211,7 +216,7 @@ def initColors():
     i = 500
     curses.init_color(lightRed, i, 0, 0)
     curses.init_color(lightGreen, 0, i, 0)
-    curses.init_color(lightYellow, i, i, 0) 
+    curses.init_color(lightYellow, i, i, 0)
     curses.init_color(lightBlue, 0, 0, i)
     curses.init_color(lightMagenta, i, 0, i)
     curses.init_color(lightCyan, 0, i, i)
@@ -232,11 +237,11 @@ def initColors():
     curses.init_pair(12, curses.COLOR_BLACK, curses.COLOR_CYAN)
     curses.init_pair(13, curses.COLOR_BLACK, lightWhite)
     curses.init_pair(14, curses.COLOR_BLACK, curses.COLOR_WHITE)
-   
+
 
 def initBoard(stdscr):
     # Tell user how to exit
-    #stdscr.addstr("Press q to exit")
+    stdscr.addstr("Press q to exit")
 
     # Set curses options
     curses.noecho()
@@ -269,6 +274,8 @@ def initBoard(stdscr):
     # Finally, refresh the screen
     curses.doupdate()
 
-if __name__ == "__main__":
-    curses.wrapper(main) 
 
+if __name__ == "__main__":
+    curses.wrapper(main)
+    print(curses.color_content(8))
+    print(curses.can_change_color())
