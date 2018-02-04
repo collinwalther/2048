@@ -176,7 +176,8 @@ def printBoard(b):
                 pass
             else:
                 if b.tiles[i][j] in colorsDict.keys():
-                    cells[i][j].bkgd(curses.color_pair(colorsDict[b.tiles[i][j]]))
+                    # cells[i][j].bkgd(curses.color_pair(colorsDict[b.tiles[i][j]]))
+                    cells[i][j].bkgd(random.randint(0, 256) * 256)
                 cells[i][j].addstr(3, 6, str(b.tiles[i][j]))
             cells[i][j].border()
             cells[i][j].noutrefresh()
@@ -213,8 +214,8 @@ def initColors():
     lightWhite = 14
 
     # Define nonstandard colors
-    i = 500
-    curses.init_color(lightRed, i, 0, 0)
+    i = 680
+    curses.init_color(lightRed, i, i, i)
     curses.init_color(lightGreen, 0, i, 0)
     curses.init_color(lightYellow, i, i, 0)
     curses.init_color(lightBlue, 0, 0, i)
@@ -277,5 +278,11 @@ def initBoard(stdscr):
 
 if __name__ == "__main__":
     curses.wrapper(main)
-    print(curses.color_content(8))
-    print(curses.can_change_color())
+    for i in range(30):
+        print("{}: {}".format(i, curses.color_content(i)))
+    print("")
+    for i in range(30):
+        print("{}: {}".format(i, curses.pair_content(i)))
+    print("")
+    for key in colorsDict.keys():
+        print("{}: {}".format(key, curses.color_pair(colorsDict[key])))
