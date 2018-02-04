@@ -1,4 +1,3 @@
-import numpy as np
 import random
 import curses
 from copy import deepcopy
@@ -96,23 +95,32 @@ class Board:
             modified = self.collapse(row) or modified
         return modified
 
-    def moveUp(self):
-        self.tiles = np.rot90(self.tiles, k=1)
+    def moveDown(self):
+        self.tiles = self.rot90(self.tiles)
         modified = self.moveLeft()
-        self.tiles = np.rot90(self.tiles, k=3)
+        self.tiles = self.rot90(self.tiles)
+        self.tiles = self.rot90(self.tiles)
+        self.tiles = self.rot90(self.tiles)
         return modified
 
     def moveRight(self):
-        self.tiles = np.rot90(self.tiles, k=2)
+        self.tiles = self.rot90(self.tiles)
+        self.tiles = self.rot90(self.tiles)
         modified = self.moveLeft()
-        self.tiles = np.rot90(self.tiles, k=2)
+        self.tiles = self.rot90(self.tiles)
+        self.tiles = self.rot90(self.tiles)
         return modified
 
-    def moveDown(self):
-        self.tiles = np.rot90(self.tiles, k=3)
+    def moveUp(self):
+        self.tiles = self.rot90(self.tiles)
+        self.tiles = self.rot90(self.tiles)
+        self.tiles = self.rot90(self.tiles)
         modified = self.moveLeft()
-        self.tiles = np.rot90(self.tiles, k=1)
+        self.tiles = self.rot90(self.tiles)
         return modified
+
+    def rot90(self, tiles):
+        return list([list(x) for x in zip(*tiles[::-1])])
 
     def collapse(self, row):
         ret = self.compress(row)
@@ -175,8 +183,7 @@ def printBoard(b):
                 pass
             else:
                 if b.tiles[i][j] in colorsDict.keys():
-                    # cells[i][j].bkgd(curses.color_pair(colorsDict[b.tiles[i][j]]))
-                    cells[i][j].bkgd(random.randint(0, 256) * 256)
+                    cells[i][j].bkgd(curses.color_pair(colorsDict[b.tiles[i][j]]))
                 cells[i][j].addstr(3, 6, str(b.tiles[i][j]))
             cells[i][j].border()
             cells[i][j].noutrefresh()
@@ -277,11 +284,3 @@ def initBoard(stdscr):
 
 if __name__ == "__main__":
     curses.wrapper(main)
-    for i in range(30):
-        print("{}: {}".format(i, curses.color_content(i)))
-    print("")
-    for i in range(30):
-        print("{}: {}".format(i, curses.pair_content(i)))
-    print("")
-    for key in colorsDict.keys():
-        print("{}: {}".format(key, curses.color_pair(colorsDict[key])))
